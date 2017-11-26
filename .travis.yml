@@ -4,7 +4,7 @@ deploy:
   provider: heroku
   api_key:
     secure: tkK6AfCzpm6qLxUbCU8nIN42vurTRi9+KNPWvw0hNiwDq7BFHNiyhCHtQGzo1xSp3TUlJhbUbQkco/8ykJQbOFXbabVe3RPKrHKIrv1IuV5I0637GCKsiIP6QsDIaUwNRy2+XNK6bwQ0O899ThUhR7zwOqpfN9VSfI3VH/ywFpaLxLzk2GqWG5mPAl7KHbI/ljtydkd9SBqmDO+54qHWv0hYaFQzspBdkhGtLxVnnsSxGdRpvGBCcv8Iiy4rcIDrojXZrrOjXF5fpkNlhinR3UAmDBPCoD9AZKqI5p8p7Z8sN8x8AwUFBL76x552OBB274nTSdj0YbwX08yEOiQauwdP7SnYpe+xzOjZgW7bWT7J1JKUbVmd79YW3Qpq+w910yXss+g1J2y0wWnmnRc61gUI3MpkGboF38Jp0Lp719+yh6Ir5CtS8ce8Cbv6bxkFBfLVvsvyJiMUt0YROxtwA3WwQCXyOu3bxC05AMLzsQyT0TsUlkkVa0jtGelhaMVGw9A8rxNvyeDmiL1cdpgnQd1UQ4XcRZnkD8+PZlklDBBJZKwjySplbGvDUlkR0eXOAGX3L/DlKfsTAx/5poaAzRIPjxGQOlDVn3+hFeOuOmsR9+7lD833XjetGDYqmJefVzvyCM00trSF8zkKjT20uiUzfBEWvXNWQ+9bryLW9Pg=
-  app: obscure-hollows-69792
+  app: blog-api-69792
   on:
     repo: zackaryb123/BlogAPI
 before_script: chmod 0777 ./node_modules/.bin/mocha
