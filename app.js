@@ -8,7 +8,7 @@ const app = express();
 
 const BlogsRouter = require('./routes/blog-post');
 
-app.use(logger('dev'));
+app.use(logger('common'));
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
@@ -46,6 +46,6 @@ function closeServer() {
 
 if (require.main === module) {
     runServer().catch(err => console.error(err));
-}
+};
 
 module.exports = { app, runServer, closeServer };
