@@ -1,2 +1,9 @@
-﻿language: node_js
+language: node_js
 node_js: node
+deploy:
+  provider: heroku
+  api_key:
+    secure: JQCKrTpi8kZ3FNWfuOAbPK+rRGFiBXRpVYHsJgGFbCNSGqYhvihr4c7PvNurvcfLHYD/Vo2HCJyMZNm7JZ6HAKRaTmCOrkJcJ/1nwK29t5RaOWQC/cNRgSrk2q1K3l66jfCsa43f4aUOds+CkjwfFFxMEpNIAsdReDlwjVlYj5Z5y9d+qJ8pr7pzfdPDhDEq1W6U+AlBRremZrp6UFYdO+6UAZLpDdtBkZE6rZiB8aYhSvBXHEZh0zh3HxCu08jAJoVqetiP6wr4LQlF7kzL5vAPgOZoVAJVKE4vImub1diHMQOJu3jhzcpi/c555bk29uhzqrrZOwvTEgRdYjmrPMRbJCe7/GI3+DOZtF8EB6tHH7ePIPdAI32nl4NtQMhqRpEM7iK2ec12/KNNUIytW6m3itq5MnL7iHjNyhw9NQ7nJRBwXIUihcKcHSTP1kCefvb6xFVoxmbsaPJWoVJIdCLYzzbO6IQGAYm75wfmTBGoskfl+bl0RbfxNRt20rqCiu6J7iPx/Db1KLBgOnOy6SD4u/qwNYZsVAbp9ZkoxHYWRg3p9Qv2Eju8FnvkYAsF5mOzLHbqQwq8q/ynoTJIEh/w3O+hIICDhi4ruu0dXerlZoK70Xo2fa7tGzjDVWMCGnuN5DD1EQkh7I+A2SfxOtLFwDC4tVKMUZxTzjA5LSU=
+  app: obscure-hollows-69792
+  on:
+    repo: zackaryb123/BlogAPI
