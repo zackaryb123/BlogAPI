@@ -7,3 +7,4 @@ deploy:
   app: obscure-hollows-69792
   on:
     repo: zackaryb123/BlogAPI
+before_script: chmod 0777 ./node_modules/.bin/mocha
