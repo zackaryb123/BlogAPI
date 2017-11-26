@@ -38,6 +38,10 @@
       <SubType>Code</SubType>
       <TestFramework>Tape</TestFramework>
     </Compile>
+    <Compile Include="test\test-blog-post.js">
+      <SubType>Code</SubType>
+      <TestFramework>Mocha</TestFramework>
+    </Compile>
     <Content Include="package.json" />
     <Content Include="public\stylesheets\main.css" />
     <Content Include="README.md" />
@@ -46,6 +50,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="test\" />
     <Folder Include="public\" />
     <Folder Include="public\images\" />
     <Folder Include="public\javascripts\" />

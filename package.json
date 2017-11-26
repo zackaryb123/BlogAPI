@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "node app",
+    "test": "mocha ./test"
   },
   "description": "BlogAPI",
   "author": {
@@ -18,5 +19,10 @@
     "pug": "^2.0.0-beta6",
     "serve-favicon": "^2.3.0",
     "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "mocha": "^4.0.1"
   }
 }
