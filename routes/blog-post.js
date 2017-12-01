@@ -53,7 +53,7 @@ router.post('/posts', (req, res) => {
                 lastName: req.body.author.lastName
             }
         }).then(blogpost => {
-            console.log(`Created blog post with id \`${res.body._id}\``);
+            console.log(`Created blog post with id \`${res.body.id}\``);
             res.status(201).json(blogpost.apiRepr());
         }).catch(err => {
             console.error(err);
@@ -62,7 +62,7 @@ router.post('/posts', (req, res) => {
 });
 
 router.put('/posts/:id', (req, res) => {
-    if (!(req.params.id && req.body._id && req.params.id === req.body._id)) {
+    if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
         const message = (
             `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`);
         console.error(message);
