@@ -1,12 +1,12 @@
 ﻿const chai = require('chai');
 const chaiHttp = require('chai-http');
-const fakerw = require('faker');
+const faker = require('faker');
 const mongoose = require('mongoose');
 
 const should = chai.should();
 
 const { app, runServer, closeServer } = require('../app');
-const {BlogPosts} = require('../models');
+const {BlogPosts} = require('../routes/models');
 const {TEST_DATABASE_URL} = require('../config');
 const NUM_TEST_OBJ = 5;
 
@@ -17,47 +17,30 @@ function seedBlogpostData() {
     const seedData = [];
 
     for (let i=1; i<NUM_TEST_OBJ; i++){
-        seedData.push(generatedBlogpostData());
+        seedData.push(generateBlogPostData());
     }
 
-    return BlogPosts.insertMany(seeData);
-}
-
-function generateTitle() {
-    const index = -1;
-    const titles = [ 'Blog 1', 'Blog 2', 'Blog 3', 'Blog 4', 'Blog 5'];
-    if (index < NUM_TEST_OBJ)
-        index++;
-    return titles[index];
-}
-
-function generateContent() {
-    const contents = ['Hello World!', 'Goodbye World!'];
-    return contents[Math.floor(Math.random() * contents.length)];
-}
-
-function generateAuthor() {
-    const authors = ['Zack Blaylock', 'Jim Houge', 'Luaren Goodwin'];
-    const author = authors[Math.floor(Math.random() * authors.length)];
-    const nameArray = author.split(' ');
-    return {
-        firstName: nameArray[0],
-        lastName: nameArray[1]
-    };
+    return BlogPosts.insertMany(seedData);
 }
 
 function generateBlogPostData() {
     return {
-        title: generateTitle(),
-        content: generateContent(),
-        author: generateAuthor(),
-        created: faker.date.past()
+        title: faker.lorem.sentence(),
+        content: faker.lorem.text(),
+        author: {
+            firstName: faker.name.firstName(),
+            lastName: faker.name.lastName()
+        },
     };
 }
 
 function tearaDownDB() {
-    console.warn('Deleting database');
-    return mongoose.connection.dropDatabase();
+    return new Promise((resolve, reject) => {
+        console.warn('Deleting database');
+        return mongoose.connection.dropDatabase()
+            .then(result => resolve(result))
+            .catch(err => reject(err))
+    });
 }
 
 describe('BlogPost API resource', function () {
