@@ -1,22 +1,42 @@
 ﻿'use strict';
 const express = require('express');
-const router = express.Router();
-const path = require('path');
-
 const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
+const mongoose = require('mongoose');
+
+mongoose.Promise = global.Promise;
 
 const { BlogPosts } = require('./models'); 
 
-BlogPosts.create("1st Blog", "Inital", "Zack", Date.now());
-BlogPosts.create("1st Blog", "Second", "Dom", Date.now());
-BlogPosts.create("1st Blog", "Last", "Daron", Date.now());
+const router = express.Router(); //why do we have to add .Router()
+router.use(bodyParser.json());
 
-router.get('/', function (req, res) {
-    res.json(BlogPosts.get());
+router.get('/posts', (req, res) => {
+    BlogPosts
+        .find()
+        .then(blogpost => {
+            res.json({
+                blogpost: blogpost.map(
+                    (blogpost) => blogpost.apiRepr())
+            });
+        }).catch(
+            err => {
+                console.error(err);
+                res.status(500).json({message: 'Internal server error'});
+            }
+        );
 });
 
-router.post('/', jsonParser, (req, res) => {
+router.get('/posts/:id', (req, res) => {
+    BlogPosts
+        .findById(req.params.id)
+        .then(blogpost => res.json(blogpost.apiRepr()))
+        .catch(err => {
+            console.error(err);
+            res.status(500).json({message: 'Internal server error'})
+        });
+});
+
+router.post('/posts', (req, res) => {
     const requiredFields = ['title', 'content', 'author'];
     for (let i = 0; i < requiredFields.length; i++) {
         const field = requiredFields[i];
@@ -26,43 +46,52 @@ router.post('/', jsonParser, (req, res) => {
             return res.status(400).send(message);
         }
     }
-    const item = BlogPosts.create(req.body.title, req.body.content, req.body.author, req.body.publishDate);
-    res.status(201).json(item);
+
+    BlogPosts
+        .create({
+            title: req.body.title,
+            content: req.body.content,
+            author: {
+                firstName: req.body.author.firstName,
+                lastName: req.body.author.lastName
+            }
+        }).then(
+            blogpost => res.status(201).json(blogpost.apiRepr())
+        ).catch(err => {
+            console.error(err);
+            res.status(500).json({message: 'Internal server error'});
+        });
 });
 
-router.delete('/:id', (req, res) => {
-    BlogPosts.delete(req.params.id);
-    console.log(`Deleted shopping list item \`${req.params.id}\``);
-    res.status(204).end();
-});
-
-router.put('/:id', jsonParser, (req, res) => {
-    const requiredFields = ['id', 'title', 'content', 'author', 'publishDate'];
-    for (let i = 0; i < requiredFields.length; i++) {
-        const field = requiredFields[i];
-        if (!(field in req.body)) {
-            const message = `Missing \`${field}\` in request body`
-            console.error(message);
-            return res.status(400).send(message);
-        }
-    }
+router.put('/post/:id', (req, res) => {
     if (req.params.id !== req.body.id) {
         const message = (
-            `Request path id (${req.params.id}) and request body id `
-                `(${req.body.id}) must match`);
+            `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`);
         console.error(message);
         return res.status(400).send(message);
     }
-    console.log(`Updating shopping list item \`${req.params.id}\``);
-    const updatedItem = BlogPosts.update({
-        id: req.params.id,
-        title: req.body.title,
-        content: req.body.content,
-        publishDate: req.body.publishDate
+
+    const toUpdate = {};
+    const updateableFields = ['title', 'content', 'author'];
+    updateableFields.forEach(field => {
+        if (field in req.body){
+            toUpdate[field] = req.body[field];
+        }
     });
-    res.status(204).end();
+
+    BlogPosts
+        .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+        .then(blogpost => res.status(200).end())
+        .catch(errr => res.status(500).json({messgae: 'Internal server error'}));
+});
+
+router.delete('/post/:id', (req, res) => {
+    BlogPosts
+        .findByIdAndRemove(req.params.id)
+        .then(blogpost => res.status(204).end())
+        .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
 
-module.exports = router;
+module.exports = {BlogPost};
 
