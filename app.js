@@ -1,45 +1,56 @@
-﻿'use strict';
-const debug = require('debug');
+﻿
 const express = require('express');
 const path = require('path');
-const logger = require('morgan');
+const mongoose = require('mongoose');
+const morgan = require('morgan');
+
+const {PORT, DATABASE_URL} = require('./config');
+const BlogRouter = require('./routes/blog-post');
 
 const app = express();
-
-const BlogsRouter = require('./routes/blog-post');
-
-app.use(logger('common'));
+app.use(morgan('dev'));
 app.use(express.static('public'));
+app.use('/', BlogRouter);
+
+mongoose.Promise = global.Promise;
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname), '/views/layout.html');
 });
 
-app.use('/blog-post', BlogsRouter);
+app.use('*', (req, res) => {
+    res.status(404).json({message: 'Not Found'});
+});
 
 let server;
 
-function runServer() {
-    const port = process.env.PORT || 8080;
+function runServer(databaseUrl=DATABASE_URL, port=PORT) {
     return new Promise((resolve, reject) => {
-        server = app.listen(port, () => {
-            console.log(`Express server listening on port ${port}`);
-            resolve(server);
-        }).on('error', err => {
-            reject(err);
-        });
+        mongoose.connect(databaseUrl,err => {
+            if (err){
+                return reject(err);
+            }
+            server = app.listen(port, () => {
+                console.log(`Express server listening on port ${port}`);
+                resolve(); //resolve(server);
+            }).on('error', err => {
+                mongoose.disconnect();
+                reject(err);
+            });
+        })
     });
 }
 
 function closeServer() {
-    return new Promise((resolve, reject) => {
-        console.log('Closing server');
-        server.close(err => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
+    return mongoose.disconnect().then(() => {
+        return new Promise((resolve, reject) => {
+            console.log('Closing server');
+            server.close(err => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
         });
     });
 }
