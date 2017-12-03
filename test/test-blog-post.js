@@ -30,7 +30,7 @@ function generateBlogPostData() {
         author: {
             firstName: faker.name.firstName(),
             lastName: faker.name.lastName()
-        },
+        }
     };
 }
 
@@ -63,48 +63,44 @@ describe('BlogPost API resource', function () {
     describe('GET endpoint', function(){
 
         it('should return all existing blogpost', function () {
-            let resolve;
+            let res;
             return chai.request(app)
-                .get('/post')
-                .then(function (res) {
-                    resolve = res;
-                    resolve.should.have.status(200);
-                    resolve.should.be.json;
-                    resolve.body.should.be.a('array');
-                    resolve.body.length.should.be.at.least(1);
+                .get('/posts')
+                .then(function (_res) {
+                    res = _res;
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.blogposts.should.be.a('array');
+                    res.body.blogposts.should.have.length.of.at.least(1);
                     
                     return BlogPosts.count();
                 }).then(function(count) {
-                    resolve.body.blogposts.should.have.length.of(count);
+                    res.body.blogposts.should.have.lengthOf(count);
                 });
             });
     
         it('should return blogpost by id with corresponding fields', function() {
             let resBlogpost;
-            return BlogPosts
-            .findOne()
-            .then(function(post) {
-                resBlogpost.id = post.id;
+            return chai.request(app)
+                .get('/posts')
+                .then(function(res) {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.blogposts.should.be.a('array');
+                    res.body.blogposts.should.have.length.of.at.least(1);
 
-                return chai.request(app)
-                    .get(`/post/${resBlogpost.id}`)
-                    .then(function(res) {
-                        res.should.have.status(200);
-                        res.should.be.json;
-                        res.body.blogpost.should.have.length.of.at.least(1);
-
-                        res.body.blogposts.body.should.be.a('object'); // Check
-                        res.body.blogposts.body.should.include.keys(
+                    res.body.blogposts.forEach(function(post){
+                        post.should.be.a('object');
+                        post.should.include.keys(
                             'id', 'title', 'author', 'created');
                     });
-                    resBlogpost = res.body.blogposts.body;
+                    resBlogpost = res.body.blogposts[0];
                     return BlogPosts.findById(resBlogpost.id);
-            }).then(function(post) {
-                resBlogpost.id.should.equal(post.id);
-                resBlogpost.title.should.equal(post.title);
-                resBlogpost.author.should.equal(post.author);
-                resBlogpost.created.should.equal(post.created);
-            });
+                }).then(function(post) {
+                    resBlogpost.id.should.equal(post.id);
+                    resBlogpost.title.should.equal(post.title);
+                    resBlogpost.author.should.equal(post.authorFullName);
+                });
         });
     });
 
@@ -112,19 +108,17 @@ describe('BlogPost API resource', function () {
         it('should add an new blogpost', function () {
             const newPost = generateBlogPostData();
             return chai.request(app)
-                .post('/post')
+                .post('/posts')
                 .send(newPost)
                 .then(function (res) {
                     res.should.have.status(201);
                     res.should.be.json;
                     res.body.should.be.a('object');
-                    res.body.should.include.keys('id', 'title', 'content', 'created')
+                    res.body.should.include.keys('id', 'title', 'content', 'created');
                     res.body.id.should.not.be.null;
                     res.body.title.should.equal(newPost.title);
                     res.body.content.should.equal(newPost.content);
-                    res.body.author.firstName.should.equal(newPost.author.firstName);
-                    res.body.author.lastName.should.equal(newPost.author.lastName);
-                    res.body.created.should.equal(newPost.created);
+                    res.body.author.should.equal(`${newPost.author.firstName} ${newPost.author.lastName}`);
 
                     return BlogPosts.findById(res.body.id);
                 }).then(function(post) {
@@ -132,7 +126,6 @@ describe('BlogPost API resource', function () {
                     post.content.should.equal(newPost.content);
                     post.author.firstName.should.equal(newPost.author.firstName);
                     post.author.lastName.should.equal(newPost.author.lastName);
-                    post.created.should.equal(newPost.created);
                 });
         });
     });
@@ -142,7 +135,10 @@ describe('BlogPost API resource', function () {
             const updateData = {
                 title: 'Updated blog',
                 content: "Updates content",
-                created: Date.now()
+                author: {
+                    firstName: 'Updated name',
+                    lastName: 'Updated lastname'
+                }
             };
             return BlogPosts
                 .findOne()
@@ -150,7 +146,7 @@ describe('BlogPost API resource', function () {
                     updateData.id = post.id;
 
                     return chai.request(app)
-                        .put(`/blog-post/${post.id}`)
+                        .put(`/posts/${post.id}`)
                         .send(updateData); 
                 }).then(function(res) {
                     res.should.have.status(204);
@@ -159,7 +155,8 @@ describe('BlogPost API resource', function () {
                 }).then(function(post) {
                     post.title.should.equal(updateData.title);
                     post.content.should.equal(updateData.content);
-                    post.created.should.equal(updateData.created);
+                    post.author.firstName.should.equal(updateData.author.firstName);
+                    post.author.lastName.should.equal(updateData.author.lastName);
                 });
         });
     });

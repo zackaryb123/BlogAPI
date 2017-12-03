@@ -48,12 +48,8 @@ router.post('/posts', (req, res) => {
         .create({
             title: req.body.title,
             content: req.body.content,
-            author: {
-                firstName: req.body.author.firstName,
-                lastName: req.body.author.lastName
-            }
+            author: req.body.author
         }).then(blogpost => {
-            console.log(`Created blog post with id \`${res.body.id}\``);
             res.status(201).json(blogpost.apiRepr());
         }).catch(err => {
             console.error(err);
