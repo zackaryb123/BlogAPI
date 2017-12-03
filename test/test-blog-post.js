@@ -35,9 +35,9 @@ function generateBlogPostData() {
 }
 
 function tearaDownDB() {
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject) {
         console.warn('Deleting database');
-        return mongoose.connection.dropDatabase()
+        mongoose.connection.dropDatabase()
             .then(result => resolve(result))
             .catch(err => reject(err))
     });
